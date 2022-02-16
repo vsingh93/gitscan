@@ -5,6 +5,7 @@ import boto3
 import requests
 import os
 import hvac
+import datetime
 
 print (f"\n\n\n{'*'*50}\nGIT SECRET SCANNING USING GITLEAKS\n{'*'*50}\n\n\n")
 
@@ -19,6 +20,8 @@ def get_variables():
     fetch_repos(github_token,slack_token,gh_uname)
 
 def fetch_repos(gh_token,sl_token,gh_uname):
+    msg = "GIT SECRET SCANNING INITIATED ON {}".format(datetime.datetime.now())
+    post_message_to_slack(msg,sl_token)
     url = "https://api.github.com/orgs/grofers/repos"
     headers = {"Accept":"application/vnd.github.v3+json", "Authorization":"token " + gh_token}
     repo_list = []
