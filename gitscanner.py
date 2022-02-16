@@ -13,10 +13,10 @@ slack_channel = '#testing-notifications-via-slack'
 
 def get_variables():
     ssm = boto3.client('ssm',region_name='ap-south-1')
-    response = ssm.get_parameters(Names=['gh_token','slack_token','gh_uname'],WithDecryption=True)
+    response = ssm.get_parameters(Names=['gh_token','gh_uname','slack_token'],WithDecryption=True)
     github_token = response['Parameters'][0]['Value']
-    slack_token = response['Parameters'][1]['Value']
-    gh_uname = response['Parameters'][2]['Value']
+    slack_token = response['Parameters'][2]['Value']
+    gh_uname = response['Parameters'][1]['Value']
     fetch_repos(github_token,slack_token,gh_uname)
 
 def clean_repos():
@@ -68,7 +68,7 @@ def fetch_repos(gh_token,sl_token,gh_uname):
                 repo_list.append(item['clone_url'])
             print ("[+]Added to list !\n")
         else:
-            exit()
+            break
     print (f"List of all available repos: \n")
     for x in repo_list:
         print (x)
