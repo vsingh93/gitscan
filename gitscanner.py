@@ -29,7 +29,7 @@ def fetch_repos(gh_token,sl_token,gh_uname):
         payload = {'type':'all','per_page':5000,'page':i}
         try:
             r =requests.get(url, headers=headers, params=payload)
-            print (f"\nConnection Successfull !!! Fetching page {q}. .\n")
+            print (f"\nConnection Successfull !!! Fetching page {i}. .\n")
         except requests.exceptions.HTTPError as err:
             post_message_to_slack(err, sl_token)
             raise SystemExit(err)
