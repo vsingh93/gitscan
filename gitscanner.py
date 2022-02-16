@@ -19,6 +19,35 @@ def get_variables():
     gh_uname = response['Parameters'][2]['Value']
     fetch_repos(github_token,slack_token,gh_uname)
 
+def clean_repos():
+    basepath = os.getcwd()
+    folder_contents = os.listdir(basepath)
+    for items in folder_contents:
+        if os.path.isdir(items):
+            cmd = "rm -r {}".format(items)
+
+
+def post_file_to_slack(text, file_name, file_bytes, slack_token, file_type=None, title=None):
+    return requests.post(
+      'https://slack.com/api/files.upload', 
+      {
+        'token': slack_token,
+        'filename': file_name,
+        'channels': slack_channel,
+        'filetype': file_type,
+        'initial_comment': text,
+        'title': title
+      },
+      files = { 'file': file_bytes }).json()
+
+def post_message_to_slack(text, slack_token, blocks = None):
+    return requests.post('https://slack.com/api/chat.postMessage', {
+        'token': slack_token,
+        'channel': slack_channel,
+        'text': text,
+        'blocks': json.dumps(blocks) if blocks else None
+    })
+
 def fetch_repos(gh_token,sl_token,gh_uname):
     msg = "GIT SECRET SCANNING INITIATED ON {}".format(datetime.datetime.now())
     post_message_to_slack(msg,sl_token)
@@ -77,36 +106,6 @@ def scan_cloned_repos(sl_token):
                 print (err)
             os.system('cd ..')
     clean_repos()
-
-
-def clean_repos():
-    basepath = os.getcwd()
-    folder_contents = os.listdir(basepath)
-    for items in folder_contents:
-        if os.path.isdir(items):
-            cmd = "rm -r {}".format(items)
-
-
-def post_file_to_slack(text, file_name, file_bytes, slack_token, file_type=None, title=None):
-    return requests.post(
-      'https://slack.com/api/files.upload', 
-      {
-        'token': slack_token,
-        'filename': file_name,
-        'channels': slack_channel,
-        'filetype': file_type,
-        'initial_comment': text,
-        'title': title
-      },
-      files = { 'file': file_bytes }).json()
-
-def post_message_to_slack(text, slack_token, blocks = None):
-    return requests.post('https://slack.com/api/chat.postMessage', {
-        'token': slack_token,
-        'channel': slack_channel,
-        'text': text,
-        'blocks': json.dumps(blocks) if blocks else None
-    })
 
 get_variables()
 
