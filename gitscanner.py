@@ -6,8 +6,6 @@ import requests
 import os
 import hvac
 
-from GitSecret_Final import fetch_repos
-
 print (f"\n\n\n{'*'*50}\nGIT SECRET SCANNING USING GITLEAKS\n{'*'*50}\n\n\n")
 
 
