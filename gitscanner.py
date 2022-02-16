@@ -102,5 +102,5 @@ def post_message_to_slack(text, slack_token, blocks = None):
         'blocks': json.dumps(blocks) if blocks else None
     })
 
-
+get_variables()
 
