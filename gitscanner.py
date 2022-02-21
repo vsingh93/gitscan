@@ -9,7 +9,7 @@ import datetime
 
 print (f"\n\n\n{'*'*50}\nGIT SECRET SCANNING USING GITLEAKS\n{'*'*50}\n\n\n")
 
-slack_channel = '#testing-notifications-via-slack'
+slack_channel = '#infra-security-alerts'
 
 def get_variables():
     ssm = boto3.client('ssm',region_name='ap-south-1')
