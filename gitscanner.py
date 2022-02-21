@@ -19,13 +19,6 @@ def get_variables():
     gh_uname = response['Parameters'][1]['Value']
     fetch_repos(github_token,slack_token,gh_uname)
 
-def clean_repos():
-    basepath = os.getcwd()
-    folder_contents = os.listdir(basepath)
-    for items in folder_contents:
-        if os.path.isdir(items):
-            cmd = "rm -r {}".format(items)
-
 
 def post_file_to_slack(text, file_name, file_bytes, slack_token, file_type=None, title=None):
     return requests.post(
@@ -105,7 +98,6 @@ def scan_cloned_repos(sl_token):
             except IOError as err:
                 print (err)
             os.system('cd ..')
-    clean_repos()
 
 get_variables()
 
