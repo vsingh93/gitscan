@@ -6,6 +6,7 @@ import requests
 import os
 import hvac
 import datetime
+import pandas
 
 print (f"\n\n\n{'*'*50}\nGIT SECRET SCANNING USING GITLEAKS\n{'*'*50}\n\n\n")
 
@@ -19,7 +20,12 @@ def get_variables():
     gh_uname = response['Parameters'][1]['Value']
     fetch_repos(github_token,slack_token,gh_uname)
 
-
+def merge_files(all_files,sl_token):
+    combined_csv = pd.concat([pd.read_csv(f) for f in all_files ])
+    combined_csv.to_csv( "combined_csv.csv", index=False, encoding='utf-8-sig')
+    merged_data = open("combined_csv.csv","r")
+    post_file_to_slack("Merged File",'',merged_data,sl_token)
+    
 def post_file_to_slack(text, file_name, file_bytes, slack_token, file_type=None, title=None):
     return requests.post(
       'https://slack.com/api/files.upload', 
@@ -74,6 +80,7 @@ def fetch_repos(gh_token,sl_token,gh_uname):
     scan_cloned_repos(sl_token)
 
 def scan_cloned_repos(sl_token):
+    all_files = []
     basepath = os.getcwd()
     print (f"\n\n{'*'*50}\n\nCurrent Working Directory: {basepath} \n\n{'*'*50}\n\n")
     folder_contents = os.listdir(basepath)
@@ -84,20 +91,27 @@ def scan_cloned_repos(sl_token):
     print (f"\n\n{'*'*50}\n")
     for items in folder_contents:
         if os.path.isdir(items):
-            cmd = 'cd {} && gitleaks detect -v -r {}_result'.format(items,items)
+            cmd = 'cd {} && gitleaks detect -v -f csv -r {}_result'.format(items,items)
             print (f"Running command: {cmd}\n")
             os.system(cmd)
             text = "Gitleaks report for {}".format(items)
-            filename = '{}/{}/{}_result'.format(basepath,items,items)
+            filename = '{}/{}/{}_result.csv'.format(basepath,items,items)
+            newfile = "{}/{}/{}_report.csv".format(basepath,items,items)
             print (f"Filename: {filename}")
             try:
                 file_data = open(filename, "r")
                 if os.path.getsize(filename) > 3:
-                    rsp = post_file_to_slack(text, '', file_data, sl_token)
+                    df = pd.read_csv(filename)
+                    df["Repo Name"] = items
+                    df.to_csv(newfile, index=False)
+                    all_files.append(newfile)
+                    data = open(newfile,"r")
+                    rsp = post_file_to_slack(text, '', data, sl_token)
                     print (rsp)
             except IOError as err:
                 print (err)
             os.system('cd ..')
+    merge_files(all_files,sl_token)
 
 get_variables()
 
