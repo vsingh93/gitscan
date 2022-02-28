@@ -6,7 +6,7 @@ import requests
 import os
 import hvac
 import datetime
-import pandas
+import pandas as pd
 
 print (f"\n\n\n{'*'*50}\nGIT SECRET SCANNING USING GITLEAKS\n{'*'*50}\n\n\n")
 
@@ -96,7 +96,7 @@ def scan_cloned_repos(sl_token):
             os.system(cmd)
             text = "Gitleaks report for {}".format(items)
             filename = '{}/{}/{}_result.csv'.format(basepath,items,items)
-            newfile = "{}/{}/{}_report.csv".format(basepath,items,items)
+            newfile = '{}/{}/{}_report.csv'.format(basepath,items,items)
             print (f"Filename: {filename}")
             try:
                 file_data = open(filename, "r")
