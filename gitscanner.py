@@ -91,7 +91,7 @@ def scan_cloned_repos(sl_token):
     print (f"\n\n{'*'*50}\n")
     for items in folder_contents:
         if os.path.isdir(items):
-            cmd = 'cd {} && gitleaks detect -v -f csv -r {}_result'.format(items,items)
+            cmd = 'cd {} && gitleaks detect -v -f csv -r {}_result.csv'.format(items,items)
             print (f"Running command: {cmd}\n")
             os.system(cmd)
             text = "Gitleaks report for {}".format(items)
