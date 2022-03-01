@@ -50,27 +50,34 @@ def post_message_to_slack(text, slack_token, blocks = None):
 def fetch_repos(gh_token,sl_token,gh_uname):
     msg = "GIT SECRET SCANNING INITIATED ON {}".format(datetime.datetime.now())
     post_message_to_slack(msg,sl_token)
-    url = "https://api.github.com/orgs/grofers/repos"
+    url = "https://api.github.com/orgs/grofers/repos?type=all&per_page=100&page="
     headers = {"Accept":"application/vnd.github.v3+json", "Authorization":"token " + gh_token}
     repo_list = []
-    for i in range (1,100):
-        payload = {'type':'all','per_page':5000,'page':i}
+    c = True
+    page = 1
+    while c:
         try:
-            r =requests.get(url, headers=headers, params=payload)
-            print (f"\nConnection Successfull !!! Fetching page {i}. .\n")
+            r =requests.get((url+str(page)), headers=headers)
+            print (f"\nConnection Successfull !!! Fetching page {page}. .\n")
+            x = r.headers['link'].split(',')
         except requests.exceptions.HTTPError as err:
             post_message_to_slack(err, sl_token)
             raise SystemExit(err)
-        if (r.content) != '[]':
-            jsonresp = json.loads(r.text)
-            for item in jsonresp:
-                repo_list.append(item['clone_url'])
-            print ("[+]Added to list !\n")
-        else:
             break
+        jsonresp = json.loads(r.text)
+        for item in jsonresp:
+            repo_list.append(item['clone_url'])
+        page += 1
+        for i in range (0,len(x)):
+            if (re.search("rel=\"next\"",x[i])):
+                c = True
+                break
+            else:
+                c = False
+
     print (f"List of all available repos: \n")
-    for x in repo_list:
-        print (x)
+    for y in repo_list:
+        print (y)
     print(f"\n\n{'*'*50}\n\n")
     for item in repo_list:
         y = item.split("//")
