@@ -7,6 +7,7 @@ import os
 import hvac
 import datetime
 import pandas as pd
+import re
 
 print (f"\n\n\n{'*'*50}\nGIT SECRET SCANNING USING GITLEAKS\n{'*'*50}\n\n\n")
 
