@@ -67,7 +67,8 @@ def fetch_repos(gh_token,sl_token,gh_uname):
             break
         jsonresp = json.loads(r.text)
         for item in jsonresp:
-            repo_list.append(item['clone_url'])
+            if item['fork'] == False:
+                repo_list.append(item['clone_url'])
         page += 1
         for i in range (0,len(x)):
             if (re.search("rel=\"next\"",x[i])):
